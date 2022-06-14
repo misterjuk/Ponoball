@@ -22,12 +22,11 @@ public class Doors : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            RightAnimator.SetBool("Up", true);
-            Debug.Log("right animation");
+            LeftAnimator.SetBool("Up", true);
         }
         if(Input.touchCount >= 1)
         {
