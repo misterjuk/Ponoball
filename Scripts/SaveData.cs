@@ -7,6 +7,9 @@ public class SaveData
 {
     public int m_BestScore;
 
+    public float m_AudioVolume;
+    public float m_EffectsVolume;
+
     public string ToJson()
     {
         return JsonUtility.ToJson(this);

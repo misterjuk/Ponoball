@@ -5,7 +5,9 @@ using Config;
 
 public class Obstacle : MonoBehaviour
 {
-    
+    public delegate void OnDestroy(GameObject gameObject);
+    public static event OnDestroy ObstacleDestroyed;
+
     public ObstacleType Type;
     [SerializeField]
     public int ScorePerHit = 10;
@@ -41,12 +43,13 @@ public class Obstacle : MonoBehaviour
     }
     public void DecreaseHealth(int number)
     {
-        if (currentHealth < 0)
+        if (currentHealth > 1)
         {
             currentHealth -= number;
         }
-        else
+        else 
         {
+            ObstacleDestroyed(this.gameObject);
             Destroy(gameObject);
         }
     }

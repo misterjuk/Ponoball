@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour, ISaveable
     [Header("Spawner")]
     [SerializeField]
     private List<GameObject> gameObjectsToSpawn;
+    [SerializeField]
     private List<GameObject> currentWave = new List<GameObject>();
     [SerializeField]
     private GameObject ball;
@@ -36,6 +37,7 @@ public class GameManager : MonoBehaviour, ISaveable
         LoadJsonData(this);
 
         Pinball.AddScore += UpdateScore;
+        Obstacle.ObstacleDestroyed += RemoveGameobjectFromList;
 
         _score = 0;
         UpdateScoreUI(_score);
@@ -57,13 +59,17 @@ public class GameManager : MonoBehaviour, ISaveable
                 {
                     Vector2 direction = new Vector3(Random.Range(-4.0f,4.0f), Random.Range(2.0f, 4.0f), 0.0f) - obstacle.transform.position;
                     obstacle.GetComponent<Rigidbody2D>().AddForce(direction.normalized*0.5f, ForceMode2D.Force);
-                    Debug.DrawLine(obstacle.transform.position, new Vector3(Random.Range(-4.0f, 4.0f), Random.Range(2.0f, 4.0f), 0.0f));
+                    //Debug.DrawLine(obstacle.transform.position, new Vector3(Random.Range(-4.0f, 4.0f), Random.Range(2.0f, 4.0f), 0.0f));
                 }
             }
         }
         if(Input.touchCount >= 1)
         {
             Debug.Log(Input.GetTouch(0).position);
+        }
+        if(currentWave.Count <= 0)
+        {
+            SpawnWave();
         }
     }
     void UpdateScore(int score)
@@ -87,23 +93,26 @@ public class GameManager : MonoBehaviour, ISaveable
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        health--;
-        UpdateHealthUI(health);
-        if (health > 0)
+        if (collision.gameObject.GetComponent<Pinball>() != null)
         {
-            Destroy(currentball);
-            InstantiateBall();
-        }
-        else
-        {
-            if(_score >= _bestScore)
+            health--;
+            UpdateHealthUI(health);
+            if (health > 0)
             {
-                _bestScore = _score;
+                Destroy(currentball);
+                InstantiateBall();
             }
-            SaveJsonData(this);
-            interstitialAd.ShowAd();
-            GameOver(_score);        
-            //save scores and load new scene
+            else
+            {
+                if (_score >= _bestScore)
+                {
+                    _bestScore = _score;
+                }
+                SaveJsonData(this);
+                interstitialAd.ShowAd();
+                GameOver(_score);
+                //save scores and load new scene
+            }
         }
     }
     public void GameRestart()
@@ -123,6 +132,10 @@ public class GameManager : MonoBehaviour, ISaveable
 
         InstantiateBall();
         SpawnWave();
+    }
+    private void RemoveGameobjectFromList(GameObject gameObject)
+    {
+        currentWave.Remove(gameObject);
     }
 
     //SAVING AND LOADING 

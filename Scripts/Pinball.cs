@@ -12,6 +12,8 @@ public class Pinball : MonoBehaviour
     [SerializeField]
     private float _defaultForce;
     [SerializeField]
+    private float maxSpeed = 20.0f;
+    [SerializeField]
     [Range(0.0f,1.0f)]
     private float k = 0.5f; //variable for lowering force when ball hit some object
     // Start is called before the first frame update
@@ -26,7 +28,10 @@ public class Pinball : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        
+        if (rb.velocity.magnitude > maxSpeed)
+        {
+            rb.velocity = Vector3.ClampMagnitude(GetComponent<Rigidbody2D>().velocity, maxSpeed);
+        }
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
